@@ -40,7 +40,7 @@ function createError(user, action, record, message, extra) {
 	return new AuthorizationError(message, options);
 }
 
-function validateAllow(args) {
+function validateAllow(...args) {
 	if (args.length > 3 && !args[3]) {
 		throw new Error(`It looks like you passed 'undefined' instead of a function to the third argument to allow (arguments: ${args}). (passing 'undefined' will grant permission unconditionally, which is probably not what you want)`);
 	}
@@ -105,13 +105,13 @@ class AlsoCan {
 
 	allow(user, action, target, condition) {
 		// eslint-disable-next-line prefer-rest-params
-		validateAllow(arguments);
+		validateAllow(...arguments);
 		this.abilities.push(new Ability(this, { user, action, target, condition }));
 	}
 
 	deny(user, action, target, condition) {
 		// eslint-disable-next-line prefer-rest-params
-		validateAllow(arguments);
+		validateAllow(...arguments);
 		this.abilities.push(new Ability(this, { user, action, target, condition, deny: true }));
 	}
 
@@ -234,7 +234,7 @@ class Ability {
 		['user', 'action', 'target'].forEach((type) => {
 			const fnName = `${type}Compare`;
 			this[fnName] = Array.isArray(config[type]) ?
-				arrayAbility(alsoCan[fnName]) : 
+				arrayAbility(alsoCan[fnName]) :
 				singleAbility(alsoCan[fnName]);
 		});
 	}
