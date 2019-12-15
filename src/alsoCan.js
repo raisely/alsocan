@@ -85,7 +85,7 @@ class AlsoCan {
 
 	on(name, fn) {
 		if (!this.listeners[name]) this.listeners[name] = [];
-		if (this.listeners[name].find(fn)) throw new Error(`Function ${fn.name} already registered for event ${event}`);
+		if (this.listeners[name].find(fn)) throw new Error(`Function ${fn.name} already registered for event ${name}`);
 		this.listeners[name].push(fn);
 	}
 
@@ -278,8 +278,12 @@ class Ability {
 		}
 
 		if (this.alsoCan.debug) {
-			const targetStr = Array.isArray(this.target) ?
-				this.target.map(t => t.name) : this.target.name;
+			let targetStr;
+			if (Array.isArray(this.target)) {
+				targetStr = this.target.length ? `Array of ${this.target[0].toString()}` : '(empty array)';
+			} else {
+				targetStr = this.target.toString();
+			}
 			debugStr += ` ${isAction} on ${targetStr}`;
 		}
 
@@ -293,7 +297,7 @@ class Ability {
 		debugStr += ` ${isTarget}`;
 
 		if (this.condition) {
-			match.condition = this.condition.name;
+			match.condition = this.condition.name || this.condition.constructor.name;
 			const conditionIsFunction = typeof this.condition === 'function';
 			if (conditionIsFunction && !this.condition(user, target, ctx, action)) {
 				if (this.alsoCan.debug) console.log(`${debugStr} (${match.condition} ${no})`);
