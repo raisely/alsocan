@@ -40,7 +40,7 @@ function createError(user, action, record, message, extra) {
 	return new AuthorizationError(message, options);
 }
 
-function validateAllow(...args) {
+function validateAllow(args) {
 	if (args.length > 3 && !args[3]) {
 		throw new Error(`It looks like you passed 'undefined' instead of a function to the third argument to allow (arguments: ${args}). (passing 'undefined' will grant permission unconditionally, which is probably not what you want)`);
 	}
@@ -104,13 +104,14 @@ class AlsoCan {
 	}
 
 	allow(user, action, target, condition) {
-		validateAllow(...arguments);
+		// eslint-disable-next-line prefer-rest-params
+		validateAllow(arguments);
 		this.abilities.push(new Ability(this, { user, action, target, condition }));
 	}
 
 	deny(user, action, target, condition) {
 		// eslint-disable-next-line prefer-rest-params
-		validateAllow(...arguments);
+		validateAllow(arguments);
 		this.abilities.push(new Ability(this, { user, action, target, condition, deny: true }));
 	}
 
@@ -162,7 +163,7 @@ class AlsoCan {
 	  * @param {string|RegExp} target String or regexp to match the target name
 	  * @returns {object[]} Array of abilities matching that user
 	  */
-	getTargetAbilities(target) {
+	 getTargetAbilities(target) {
 		return this.abilities
 			.filter(ability => (Array.isArray(ability.target) ?
 				ability.target.find(t => matchTarget(targetName(t), target)) :
@@ -233,7 +234,7 @@ class Ability {
 		['user', 'action', 'target'].forEach((type) => {
 			const fnName = `${type}Compare`;
 			this[fnName] = Array.isArray(config[type]) ?
-				arrayAbility(alsoCan[fnName]) :
+				arrayAbility(alsoCan[fnName]) : 
 				singleAbility(alsoCan[fnName]);
 		});
 	}
@@ -293,7 +294,8 @@ class Ability {
 
 		if (this.condition) {
 			match.condition = this.condition.name;
-			if (!this.condition(user, target, ctx, action)) {
+			const conditionIsFunction = typeof this.condition === 'function';
+			if (conditionIsFunction && !this.condition(user, target, ctx, action)) {
 				if (this.alsoCan.debug) console.log(`${debugStr} (${match.condition} ${no})`);
 				return false;
 			}
@@ -314,10 +316,10 @@ class Ability {
 
 	/**
 	  * Checks if this rule is a match, and if the ability should be allowed/disallowed
-	  * @param {boolean} describe if true, will return an object describing the match (even if deny)
-	  * @warning If describe is true, then you must examine the return value as it could be truthy
+	  * @param {boolean} options.describeMatch if true, will return an object describing the match (even if deny)
+	  * @warning If describeMatch is true, then you must examine the return value as it could be truthy
 	  * but contain { deny: true }
-	  * @returns {boolean|object} false if it is a deny rule, null for no match, true for allow
+	  * @returns {boolean} false if it is a deny rule, null for no match, true for allow
 	  */
 	can(user, action, target, ctx, options = {}) {
 		const match = this.matches(user, action, target, ctx, options);
