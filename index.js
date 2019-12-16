@@ -1,1 +1,1 @@
-module.exports = require('src/alsoCan.js');
+module.exports = require('./src/alsoCan.js');
