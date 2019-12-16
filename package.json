@@ -1,6 +1,6 @@
 {
   "name": "alsocan",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Authorization libray, replaces cancan",
   "main": "index.js",
   "scripts": {
