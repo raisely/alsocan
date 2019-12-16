@@ -1,0 +1,24 @@
+{
+  "name": "alsocan",
+  "version": "1.0.0",
+  "description": "Authorization libray, replaces cancan",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha spec/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raisely/alsocan.git"
+  },
+  "keywords": [
+    "authorization",
+    "cancan",
+    "permissions"
+  ],
+  "author": "Chris Jensen",
+  "license": "noharm",
+  "bugs": {
+    "url": "https://github.com/raisely/alsocan/issues"
+  },
+  "homepage": "https://github.com/raisely/alsocan#readme"
+}
