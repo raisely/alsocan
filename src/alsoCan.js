@@ -78,14 +78,14 @@ class AlsoCan {
 		this.listeners = {};
 		this.abilities = [];
 
-		['authorize', 'can', 'allow', 'deny'].forEach((fn) => {
+		['authorize', 'can', 'allow', 'deny', '_can'].forEach((fn) => {
 			this[fn] = this[fn].bind(this);
 		});
 	}
 
 	on(name, fn) {
 		if (!this.listeners[name]) this.listeners[name] = [];
-		if (this.listeners[name].find(fn)) throw new Error(`Function ${fn.name} already registered for event ${name}`);
+		if (this.listeners[name].find(f => f === fn)) throw new Error(`Function ${fn.name} already registered for event ${name}`);
 		this.listeners[name].push(fn);
 	}
 
@@ -116,8 +116,10 @@ class AlsoCan {
 	}
 
 	authorize(user, action, target, ctx) {
+		console.log('authorizing...')
 		const performer = this.defaultUser(user);
-		const isAuthorized = this.can(performer, action, target, ctx);
+		const isAuthorized = this._can(performer, action, target, ctx);
+		this.emit('authorize', isAuthorized, performer, action, target, ctx)
 
 		if (!isAuthorized) {
 			const denied = (isAuthorized === false);
@@ -125,15 +127,13 @@ class AlsoCan {
 		}
 	}
 
-	can(user, action, target, ctx, options) {
-		const performer = this.defaultUser(user);
-
-		if (this.debug) debugHeader(performer, action, target, options);
+	_can(user, action, target, ctx, options) {
+		if (this.debug) debugHeader(user, action, target, options);
 
 		for (let i = 0; i < this.abilities.length; i++) {
 			const ability = this.abilities[i];
 
-			const isAuthorized = ability.can(performer, action, target, ctx, options);
+			const isAuthorized = ability.can(user, action, target, ctx, options);
 
 			// if it is true, it's allowed, stop checking
 			// if it is === false then it's explicitly denied, stop immediately
@@ -145,6 +145,14 @@ class AlsoCan {
 		if (this.debug) debugFooter(this, null);
 
 		return null;
+	}
+
+	can(user, action, target, ctx, options) {
+		const performer = this.defaultUser(user);
+		const result = this._can(user, action, target, ctx, options)
+
+		this.emit('can', result, performer, action, target, ctx)
+		return result;
 	}
 
 	/**
