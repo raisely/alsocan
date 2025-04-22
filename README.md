@@ -36,3 +36,6 @@ alsoCan.authorize(user, 'edit', record, ctx);
 // Returns true if the user can perform the action
 const can = alsoCan.can(user, 'edit', record, ctx);
 ```
+
+## Publishing
+1. Update the version in package.json

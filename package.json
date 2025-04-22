@@ -1,10 +1,9 @@
 {
   "name": "alsocan",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Authorization libray, replaces cancan",
   "main": "index.js",
   "scripts": {
-    "test": "mocha spec/"
   },
   "repository": {
     "type": "git",
@@ -20,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/raisely/alsocan/issues"
   },
-  "homepage": "https://github.com/raisely/alsocan#readme"
+  "homepage": "https://github.com/raisely/alsocan#readme",
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
 }
