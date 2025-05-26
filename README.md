@@ -39,3 +39,5 @@ const can = alsoCan.can(user, 'edit', record, ctx);
 
 ## Publishing
 1. Update the version in package.json
+2. Add the npm registry user credentials with `pnpm adduser`
+3. Publish the package with `pnpm publish` It will take you to the browser to log in to npm, or to just add the 2FA code if you are already logged in.
